@@ -4,11 +4,13 @@ const nav = document.querySelector('[data-nav]');
 const year = document.querySelector('[data-year]');
 const revealItems = document.querySelectorAll('.reveal');
 const cursorAura = document.querySelector('[data-cursor-aura]');
+const relicStage = document.querySelector('[data-relic-stage]');
+const relic = document.querySelector('[data-relic]');
+const accessButton = document.querySelector('[data-access-button]');
+const accessStatus = document.querySelector('[data-access-status]');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-if (year) {
-  year.textContent = new Date().getFullYear();
-}
+if (year) year.textContent = new Date().getFullYear();
 
 const updateHeader = () => {
   header?.classList.toggle('scrolled', window.scrollY > 24);
@@ -31,10 +33,7 @@ if (menuToggle && nav) {
     document.body.classList.toggle('menu-open', !isOpen);
   });
 
-  nav.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', closeMenu);
-  });
-
+  nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeMenu();
   });
@@ -62,9 +61,27 @@ if ('IntersectionObserver' in window && !reducedMotion) {
 
 if (cursorAura && !reducedMotion && window.matchMedia('(pointer: fine)').matches) {
   document.body.classList.add('has-pointer');
-
   window.addEventListener('pointermove', (event) => {
     cursorAura.style.left = `${event.clientX}px`;
     cursorAura.style.top = `${event.clientY}px`;
   }, { passive: true });
+}
+
+if (relicStage && relic && !reducedMotion && window.matchMedia('(pointer: fine)').matches) {
+  relicStage.addEventListener('pointermove', (event) => {
+    const rect = relicStage.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    relic.style.transform = `rotateX(${(-y * 8).toFixed(2)}deg) rotateY(${(x * 10).toFixed(2)}deg) translateZ(8px)`;
+  });
+
+  relicStage.addEventListener('pointerleave', () => {
+    relic.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
+  });
+}
+
+if (accessButton && accessStatus) {
+  accessButton.addEventListener('click', () => {
+    accessStatus.textContent = 'Private enquiry channel coming next — contact details will be connected here.';
+  });
 }
